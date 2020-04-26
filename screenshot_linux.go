@@ -11,12 +11,12 @@ import (
 	"github.com/BurntSushi/xgb/xproto"
 )
 
-type screenshoter struct {
+type Screenshoter struct {
 	conn       *xgb.Conn
 	screenInfo *xproto.ScreenInfo
 }
 
-func New() *screenshoter {
+func New() *Screenshoter {
 	conn, err := xgb.NewConn()
 	if err != nil {
 		log.Fatal(err)
@@ -24,13 +24,13 @@ func New() *screenshoter {
 
 	screenInfo := xproto.Setup(conn).DefaultScreen(conn)
 
-	return &screenshoter{
+	return &Screenshoter{
 		conn:       conn,
 		screenInfo: screenInfo,
 	}
 }
 
-func (s *screenshoter) CaptureScreen() (img *image.RGBA, err error) {
+func (s *Screenshoter) CaptureScreen() (img *image.RGBA, err error) {
 	screenRectangle := s.getScreenRectangle()
 
 	img, err  = s.CaptureRectangle(screenRectangle)
@@ -38,7 +38,7 @@ func (s *screenshoter) CaptureScreen() (img *image.RGBA, err error) {
 	return
 }
 
-func (s *screenshoter) CaptureRectangle(rectangle image.Rectangle) (*image.RGBA, error) {
+func (s *Screenshoter) CaptureRectangle(rectangle image.Rectangle) (*image.RGBA, error) {
 	x, y := rectangle.Dx(), rectangle.Dy()
 
 	xImg, err := xproto.GetImage(s.conn, xproto.ImageFormatZPixmap, xproto.Drawable(s.screenInfo.Root), int16(rectangle.Min.X), int16(rectangle.Min.Y), uint16(x), uint16(y), 0xffffffff).Reply()
@@ -60,7 +60,7 @@ func (s *screenshoter) CaptureRectangle(rectangle image.Rectangle) (*image.RGBA,
 	return img, nil
 }
 
-func (s *screenshoter) getScreenRectangle() image.Rectangle {
+func (s *Screenshoter) getScreenRectangle() image.Rectangle {
 	x := s.screenInfo.WidthInPixels
 	y := s.screenInfo.HeightInPixels
 
