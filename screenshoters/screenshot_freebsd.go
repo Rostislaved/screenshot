@@ -1,4 +1,4 @@
-package screenshot
+package screenshoters
 
 import (
 	"image"

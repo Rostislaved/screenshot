@@ -1,4 +1,4 @@
-package screenshot
+package screenshoters
 
 import (
 	// #cgo LDFLAGS: -framework CoreGraphics
@@ -7,9 +7,9 @@ import (
 	// #include <CoreFoundation/CoreFoundation.h>
 	"C"
 	"image"
+	"math"
 	"reflect"
 	"unsafe"
-	"math"
 )
 
 func ScreenRect() (image.Rectangle, error) {
