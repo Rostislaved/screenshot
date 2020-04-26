@@ -29,7 +29,7 @@ func CaptureScreen() (*image.RGBA, error) {
 
 func CaptureRect(rect image.Rectangle) (*image.RGBA, error) {
 	displayID := C.CGMainDisplayID()
-	width := int(math.Ceil(float64(C.CGDisplayPixelsWide(displayID))/16)*16)
+	width := int(math.Ceil(float64(C.CGDisplayPixelsWide(displayID))/16) * 16)
 	rawData := C.CGDataProviderCopyData(C.CGImageGetDataProvider(C.CGDisplayCreateImage(displayID)))
 
 	length := int(C.CFDataGetLength(rawData))

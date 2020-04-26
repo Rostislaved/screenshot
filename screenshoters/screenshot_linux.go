@@ -1,3 +1,5 @@
+// +build linux freebsd
+
 package screenshoters
 
 import (
@@ -9,35 +11,34 @@ import (
 )
 
 type screenshoter struct {
-	conn *xgb.Conn
+	conn       *xgb.Conn
+	screenInfo *xproto.ScreenInfo
 }
 
 func New() *screenshoter {
 	conn, err := xgb.NewConn()
 	if err != nil {
 		log.Fatal(err)
-		//return image.Rectangle{}, err
 	}
-	defer conn.Close()
 
-	return &screenshoter{conn: conn}
+	screenInfo := xproto.Setup(conn).DefaultScreen(conn)
+
+	return &screenshoter{
+		conn:       conn,
+		screenInfo: screenInfo,
+	}
 }
 
 func (s *screenshoter) CaptureScreen() (*image.RGBA, error) {
-	screenRectangle, err := s.getScreenRectangle()
-	if err != nil {
-		return nil, err
-	}
+	screenRectangle := s.getScreenRectangle()
 
 	return s.CaptureRectangle(screenRectangle)
 }
 
 func (s *screenshoter) CaptureRectangle(rectangle image.Rectangle) (*image.RGBA, error) {
-
-	screenInfo := xproto.Setup(s.conn).DefaultScreen(s.conn)
 	x, y := rectangle.Dx(), rectangle.Dy()
 
-	xImg, err := xproto.GetImage(s.conn, xproto.ImageFormatZPixmap, xproto.Drawable(screenInfo.Root), int16(rectangle.Min.X), int16(rectangle.Min.Y), uint16(x), uint16(y), 0xffffffff).Reply()
+	xImg, err := xproto.GetImage(s.conn, xproto.ImageFormatZPixmap, xproto.Drawable(s.screenInfo.Root), int16(rectangle.Min.X), int16(rectangle.Min.Y), uint16(x), uint16(y), 0xffffffff).Reply()
 	if err != nil {
 		return nil, err
 	}
@@ -48,18 +49,17 @@ func (s *screenshoter) CaptureRectangle(rectangle image.Rectangle) (*image.RGBA,
 	}
 
 	img := &image.RGBA{
-		Pix: data,
+		Pix:    data,
 		Stride: 4 * x,
-		Rect: image.Rect(0, 0, x, y),
+		Rect:   image.Rect(0, 0, x, y),
 	}
 
 	return img, nil
 }
 
-func (s *screenshoter) getScreenRectangle() (image.Rectangle, error) {
-	screen := xproto.Setup(s.conn).DefaultScreen(s.conn)
-	x := screen.WidthInPixels
-	y := screen.HeightInPixels
+func (s *screenshoter) getScreenRectangle() image.Rectangle {
+	x := s.screenInfo.WidthInPixels
+	y := s.screenInfo.HeightInPixels
 
-	return image.Rect(0, 0, int(x), int(y)), nil
+	return image.Rect(0, 0, int(x), int(y))
 }
