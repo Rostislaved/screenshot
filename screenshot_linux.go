@@ -1,6 +1,7 @@
 // +build linux freebsd
 
-package main
+package screenshot
+
 
 import (
 	"image"

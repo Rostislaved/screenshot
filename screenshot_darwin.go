@@ -1,4 +1,5 @@
-package main
+package screenshot
+
 
 import (
 	// #cgo LDFLAGS: -framework CoreGraphics
