@@ -1,6 +1,10 @@
 # Screenshot
 Simple cross-platform pure Go screen shot library. (tested on linux&windows&osx)
 
+## Changes:
+* Changed: linux and freebsd source code is one file now
+* Changed: linux (and freebsd) code refactored
+* Changed: Connection to X in linux is separated from screenshoting (Now no memory leakage while screenshoting in a loop)
 
 
 ## Basic Usage
