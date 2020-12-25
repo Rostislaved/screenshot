@@ -11,7 +11,7 @@ func main() {
 
 	screenshoter := screenshot.New()
 
-	img, err := screenshot.CaptureScreen()
+	img, err := screenshoter.CaptureScreen()
 	if err != nil {
 		log.Fatal(err)
 	}
